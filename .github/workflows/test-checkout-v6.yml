@@ -1,0 +1,56 @@
+name: Test checkout@v6 compatibility
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - test/checkout-v6-e2e
+
+jobs:
+  test-checkout-v6:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout with v6
+        uses: actions/checkout@v6
+
+      - name: Make a test change
+        run: |
+          echo "Test change at $(date)" >> test-file.txt
+          echo "This tests checkout@v6 compatibility"
+
+      - name: Create Pull Request
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'test: checkout@v6 compatibility test'
+          title: 'Test: checkout@v6 compatibility'
+          body: |
+            Automated test of checkout@v6 compatibility fix
+            
+            This PR tests that create-pull-request works correctly with actions/checkout@v6
+          branch: test/checkout-v6-compat
+          delete-branch: true
+
+  test-checkout-v5:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout with v5
+        uses: actions/checkout@v5
+
+      - name: Make a test change
+        run: |
+          echo "Test change at $(date)" >> test-file-v5.txt
+          echo "This tests backward compatibility with checkout@v5"
+
+      - name: Create Pull Request
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'test: checkout@v5 backward compatibility test'
+          title: 'Test: checkout@v5 compatibility'
+          body: |
+            Automated test of checkout@v5 backward compatibility
+            
+            This PR verifies that the fix doesn't break checkout@v5 workflows
+          branch: test/checkout-v5-compat
+          delete-branch: true
